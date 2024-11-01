@@ -14,3 +14,4 @@ namePrefix: prod-
 images:
 - name: cepgstapacr.azurecr.io/82231975
   newTag: "202411010800"
+
