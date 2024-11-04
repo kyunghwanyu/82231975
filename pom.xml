@@ -11,7 +11,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>template</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>template</name>
+	<name>82231975</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
@@ -27,9 +27,28 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>17</java.version>		
 	</properties>
-
+	
+	
+<!-- 작성한내용 -->
+	<repositories>
+		<repository>
+		<id>github</id>
+		<url>https://maven.pkg.github.com/kyunghwanyu/82239175</url>
+		</repository>
+	</repositories>
+	<distributionManagement>
+		<repository>
+		<id>github</id>
+		<name>GitHub axccoe Apache Maven Packages</name>
+		<url>https://maven.pkg.github.com/kyunghwanyu/82239175</url>
+		</repository>
+	</distributionManagement>
+	
+	
+	
+	
 	<dependencies>
 	    <dependency>
             <groupId>org.springframework.boot</groupId>
