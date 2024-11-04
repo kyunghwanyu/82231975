@@ -20,6 +20,7 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+        
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
@@ -31,33 +32,33 @@ jobs:
       run: |
         echo "::set-output name=VERSION::`date +%Y%m%d%H%M`"
         
-    - name: 'ACR login'
+    - name: 'ACR login for Base'
       uses: azure/docker-login@v1
       with:
-        login-server: ${{ secrets.BASEACR_LOGIN_SERVER  }}
+        login-server: ${{ secrets.BASEACR_LOGIN_SERVER }}
         username: ${{ secrets.BASE_ACR_USERNAME }}
         password: ${{ secrets.BASE_ACR_PASSWORD }}
 
     - name: 'Build & Tag Image'
       run: |
-            docker build -t ${{ secrets.BASEACR_LOGIN_SERVER  }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }} -f Dockerfile .
-            docker tag ${{ secrets.BASEACR_LOGIN_SERVER  }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }} ${{ secrets.BASEACR_CICD_LOGIN_SERVER  }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
+            docker build -t ${{ secrets.BASEACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }} -f Dockerfile .
+            docker tag ${{ secrets.BASEACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }} ${{ secrets.BASEACR_CICD_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
     
-    - name: 'Push image'
+    - name: 'Push image to CI/CD ACR'
       uses: azure/docker-login@v1
       with:
-        login-server: ${{ secrets.BASEACR_CICD_LOGIN_SERVER  }}
+        login-server: ${{ secrets.BASEACR_CICD_LOGIN_SERVER }}
         username: ${{ secrets.BASE_ACR_CICD_USERNAME }}
         password: ${{ secrets.BASE_ACR_CICD_PASSWORD }}
     
     - run: |
-          docker push ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
+          docker push ${{ secrets.BASEACR_CICD_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
     
     - name: Update Kubernetes resources
       run: |
           echo "`ls`"
           cd manifests/overlays/prod
-          kustomize edit set image ${{ secrets.STAPACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
+          kustomize edit set image ${{ secrets.BASEACR_CICD_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ steps.gen-version.outputs.VERSION }}
           cat kustomization.yaml
     
     - name: Commit files
